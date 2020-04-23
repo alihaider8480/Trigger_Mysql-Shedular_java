@@ -1,0 +1,65 @@
+create table employees 
+(
+ id integer not null,
+ address varchar(255), 
+ city varchar(255),
+ contact varchar(255), 
+ name varchar(255),
+ primary key (id)
+);
+
+
+create table trigger_employees 
+(
+emp_id int, 
+name varchar (30),
+address varchar (30),
+city varchar (30),
+contact varchar (30),
+isactive varchar (30),
+insert_date varchar (30)    
+);
+
+
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (1,'nazimabad khi','karachi','03312035547','ali haider');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (2,'nazimabad khi','karachi','03312035547','Furqan');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (3,'nazimabad khi','karachi','03312035547','Nadeem');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (4,'nazimabad khi','karachi','03312035547','arshad');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (5,'nazimabad khi','karachi','03312035547','tariq');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (6,'nazimabad khi','karachi','03312035547','saad');
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (7,'nazimabad khi','karachi','03312035547','hasnain');
+
+INSERT INTO `employees`(`id`, `address`, `city`, `contact`, `name`) VALUES (8,'Baffer Zone','Islamabad','03111111111','Ahmed');
+
+
+--                                         insert ka lia
+delimiter //
+create trigger employees_history
+after insert
+on employees for each row
+begin
+
+INSERT INTO trigger_employees (emp_id,name,address,city,contact,isactive,insert_date)
+SELECT id,name,address,city,contact,'1',SYSDATE() FROM employees Where id not in (select emp_id from trigger_employees);
+
+END //
+DELIMITER ;
+
+
+--                                          update  ka lia
+delimiter //
+create trigger employees_history_update
+after update
+on employees for each row
+begin
+
+UPDATE trigger_employees t1 
+        INNER JOIN employees t2                     --  inner join matlab ka jo data dono table ma mojod ho mana id ko 
+           ON t1.emp_id = t2.id                     --  compaire karka all data ko update karawa raha ho kio ka id donon
+              SET t1.name = t2.name,                --   maojood ha
+                 t1.address= t2.address,             
+                 t1.city= t2.city,
+                 t1.contact= t2.contact;
+
+END //
+DELIMITER ;
